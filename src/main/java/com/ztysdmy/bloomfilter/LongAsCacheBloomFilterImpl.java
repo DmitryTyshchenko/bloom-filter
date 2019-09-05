@@ -7,7 +7,7 @@ public class LongAsCacheBloomFilterImpl<T> implements BloomFilter<T> {
 
 	private Collection<Function<T, Integer>> hashFunctions;
 
-	private long cache = 0l;
+	private volatile long cache = 0l;
 
 	public LongAsCacheBloomFilterImpl(Collection<Function<T, Integer>> hashFunctions) {
 
@@ -27,10 +27,11 @@ public class LongAsCacheBloomFilterImpl<T> implements BloomFilter<T> {
 	}
 		
 	@Override
-	public void addToCache(T t) {
+	public synchronized void addToCache(T t) {
 		for (Function<T, Integer> hashFunction : hashFunctions) {
-			//set bits in cache
-			cache = cache|(0l << hashFunction.apply(t));
+			//update cache
+			var localCache = cache|(0l << hashFunction.apply(t));
+			cache = localCache;
 		}
 	}
 
