@@ -10,8 +10,14 @@ public class LibraryTest {
     @Test 
     public void testSomeLibraryMethod() {
     
-    	int one = 1;
-    	int two = one<<1;
-    	System.out.println(Integer.numberOfTrailingZeros(two));
+    	var cache = 1l;
+    	var mask = 1l<<2;
+    	
+    	cache = cache|mask;
+    	
+    	var mask2 = 1l<<2;
+    	
+    	System.out.println((cache&mask2)!=0);
+    	
     }
 }

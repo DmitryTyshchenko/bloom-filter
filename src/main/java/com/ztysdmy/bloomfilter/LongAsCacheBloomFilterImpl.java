@@ -19,7 +19,7 @@ public class LongAsCacheBloomFilterImpl<T> implements BloomFilter<T> {
 
 		Function<HashFunction<T>, Boolean> mightContain = hashFunction -> {
 
-			if ((cache & (1l << hashFunction.apply(t))) != 1) {
+			if ((cache & (1l << hashFunction.apply(t))) != 0) {
 				return false;
 			}
 			return true;
