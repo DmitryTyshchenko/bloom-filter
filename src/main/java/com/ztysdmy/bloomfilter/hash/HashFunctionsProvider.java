@@ -14,18 +14,30 @@ public class HashFunctionsProvider {
 	}
 
 	/**
-	 * Returns HashFunction based on crc32 calculation restricted by n parameter
-	 * @param <T>
+	 * Returns HashFunction based on crc32 calculation in range between 1 and n
 	 * @param n
 	 * @return
 	 */
 	public static <T> HashFunction<T> crc32(int n) {
-		return (t)->{
-			byte[] objectBytes = convertToBytes(t).orElseThrow(()->new RuntimeException("Can't convert Object to bytes"));
-			CRC32 crc32 = new CRC32();
-			crc32.update(objectBytes);
-			return (int) (crc32.getValue()%n);
+		return (t) -> {
+			var crcValue = crcValue(t);
+			return calculateHash(crcValue, n);
 		};
+	}
+
+	private static <T> long crcValue(T t) {
+		var objectBytes = convertToBytes(t).orElseThrow(() -> new RuntimeException("Can't convert Object to bytes"));
+		var crc32 = new CRC32();
+		crc32.update(objectBytes);
+		return crc32.getValue();
+	}
+
+	private static int calculateHash(long crcValue, int n) {
+		var result = (int) (crcValue % n);
+		if (result == 0) {
+			return 1;
+		}
+		return result;
 	}
 
 	static <T> Optional<byte[]> convertToBytes(T t) {
