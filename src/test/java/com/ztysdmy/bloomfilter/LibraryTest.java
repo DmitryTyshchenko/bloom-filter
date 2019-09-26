@@ -15,7 +15,7 @@ public class LibraryTest {
     	
     	cache = cache|mask;
     	
-    	var mask2 = 1l<<8;
+    	var mask2 = 1l<<2;
     	
     	System.out.println((cache&mask2)==0);
     	
