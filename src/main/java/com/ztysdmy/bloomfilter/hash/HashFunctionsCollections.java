@@ -8,9 +8,14 @@ import java.util.zip.CRC32;
 
 import com.ztysdmy.bloomfilter.BloomFilter.HashFunction;
 
-public class HashFunctionsProvider {
+/**
+ * Utility class which provides set of hash functions
+ * @author dmytro.tyshchenko
+ *
+ */
+public class HashFunctionsCollections {
 
-	private HashFunctionsProvider() {
+	private HashFunctionsCollections() {
 	}
 
 	/**

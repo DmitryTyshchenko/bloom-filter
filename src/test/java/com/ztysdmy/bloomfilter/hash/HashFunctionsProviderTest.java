@@ -4,7 +4,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 
-import static com.ztysdmy.bloomfilter.hash.HashFunctionsProvider.*;
+import static com.ztysdmy.bloomfilter.hash.HashFunctionsCollections.*;
 
 public class HashFunctionsProviderTest {
 	
@@ -16,6 +16,5 @@ public class HashFunctionsProviderTest {
 			Assert.assertTrue(hash<4);
 			Assert.assertTrue(hash>0);
 		}
-	}
-	
+	}	
 }
