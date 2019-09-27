@@ -1,17 +1,25 @@
-package com.ztysdmy.bloomfilter;
+package com.ztysdmy.bloomfilter.withlong;
 
 import java.util.Collection;
 import java.util.function.Function;
+
+import com.ztysdmy.bloomfilter.BloomFilter;
 
 public class LongAsCacheBloomFilterImpl<T> implements BloomFilter<T> {
 
 	private Collection<HashFunction<T>> hashFunctions;
 
-	private long cache = 1l;
+	CacheProvider cache;
+
+	public LongAsCacheBloomFilterImpl(CacheProvider cache, Collection<HashFunction<T>> hashFunctions) {
+
+		this.cache = cache;
+		this.hashFunctions = hashFunctions;
+	}
 
 	public LongAsCacheBloomFilterImpl(Collection<HashFunction<T>> hashFunctions) {
 
-		this.hashFunctions = hashFunctions;
+		this(CacheProviderImpl.Cache_64, hashFunctions);
 	}
 
 	@Override
@@ -19,7 +27,9 @@ public class LongAsCacheBloomFilterImpl<T> implements BloomFilter<T> {
 
 		Function<HashFunction<T>, Boolean> mightContain = hashFunction -> {
 
-			if ((getCache() & (1l << hashFunction.apply(t))) == 0) {
+			var hash = hashFunction.apply(t);
+
+			if ((getCache(hash) & (1l << hash)) == 0) {
 				return false;
 			}
 			return true;
@@ -43,20 +53,22 @@ public class LongAsCacheBloomFilterImpl<T> implements BloomFilter<T> {
 
 		Function<HashFunction<T>, Boolean> addToCacheFunc = hashFunction -> {
 
-			var localCache = getCache() | (1l << hashFunction.apply(t));
-			setCache(localCache);
+			var hash = hashFunction.apply(t);
+
+			var localCache = getCache(hash) | (1l << hash);
+			setCache(localCache, hash);
 			return true;
 		};
 
 		return withAllHashFunctions(addToCacheFunc);
 	}
 
-	private long getCache() {
+	private long getCache(int hash) {
 
-		return this.cache;
+		return this.cache.bucket(hash).getCache();
 	}
 
-	private void setCache(long cache) {
-		this.cache = cache;
+	private void setCache(long cache, int hash) {
+		this.cache.bucket(hash).setCache(cache);
 	}
 }

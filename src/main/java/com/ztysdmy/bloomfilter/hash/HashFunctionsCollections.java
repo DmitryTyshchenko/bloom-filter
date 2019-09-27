@@ -19,14 +19,14 @@ public class HashFunctionsCollections {
 	}
 
 	/**
-	 * Returns HashFunction based on crc32 calculation in range between 1 and n
-	 * @param n
+	 * Returns {@link HashFunction} based on crc32 calculation in range between 1 and capacity
+	 * @param capacity
 	 * @return
 	 */
-	public static <T> HashFunction<T> crc32(int n) {
+	public static <T> HashFunction<T> crc32(CapacityProvider capacity) {
 		return (t) -> {
 			var crcValue = crcValue(t);
-			return calculateHash(crcValue, n);
+			return calculateHash(crcValue, capacity.capacity());
 		};
 	}
 
@@ -59,4 +59,24 @@ public class HashFunctionsCollections {
 		return Optional.ofNullable(result);
 	}
 
+	public static interface CapacityProvider {
+		
+		int capacity();
+	}
+	
+	public static enum CapacityProviderImpl implements CapacityProvider {
+		
+		CapacityProvider_64(64), CapacityProvider_128(128), CapacityProvider_192(192);
+		
+		CapacityProviderImpl(int capacity) {
+			this.capacity = capacity;
+		}
+		
+		private int capacity;
+
+		@Override
+		public int capacity() {
+			return capacity;
+		}	
+	}
 }
