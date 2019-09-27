@@ -19,7 +19,7 @@ public class LongAsCacheBloomFilterImpl<T> implements BloomFilter<T> {
 
 		Function<HashFunction<T>, Boolean> mightContain = hashFunction -> {
 
-			if ((cache & (1l << hashFunction.apply(t))) == 0) {
+			if ((getCache() & (1l << hashFunction.apply(t))) == 0) {
 				return false;
 			}
 			return true;
@@ -43,12 +43,20 @@ public class LongAsCacheBloomFilterImpl<T> implements BloomFilter<T> {
 
 		Function<HashFunction<T>, Boolean> addToCacheFunc = hashFunction -> {
 
-			var localCache = cache | (1l << hashFunction.apply(t));
-			cache = localCache;
+			var localCache = getCache() | (1l << hashFunction.apply(t));
+			setCache(localCache);
 			return true;
 		};
 
 		return withAllHashFunctions(addToCacheFunc);
 	}
 
+	private long getCache() {
+
+		return this.cache;
+	}
+
+	private void setCache(long cache) {
+		this.cache = cache;
+	}
 }
